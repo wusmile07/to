@@ -5,6 +5,8 @@ import router from './router'
 import store from './store'
 
 Vue.config.productionTip = false
+import './assets/stylesheets/reset.css'
+import './assets/font/css/font-awesome.css'
 
 new Vue({
   router,
