@@ -3,10 +3,9 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-
+import './components/element-ui-components'
+import 'element-ui/lib/theme-chalk/index.css'
 Vue.config.productionTip = false
-import './assets/stylesheets/reset.css'
-import './assets/font/css/font-awesome.css'
 
 new Vue({
   router,

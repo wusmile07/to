@@ -1,107 +1,120 @@
 <template>
-  <div class="home-container">
-    <div class="box">
-      <ul class="list">
-        <li v-for="(item, index) in Data"
-            :key="index"
-            class="group">
-          <router-link to="About">{{item.title}}</router-link>
-          <i class="fa fa-close" @click="del(item.id)"></i>
-        </li>
-      </ul>
-      <div class="form">
-        <input type="text"  class="input" placeholder="请填写你新建的内容" ref="getValue">
-        <div class="append">
-          <button class="btn" type="button" id="create-todo" @click="add()">创建</button>
-        </div>
-      </div>
+  <div class="home-container container" >
+    <div class="header">
+      <h1>新建文章</h1>
+      <el-button
+        type="primary"
+        size="medium"
+        @click="linkTo"
+      >
+        创建文章
+        <i class="el-icon-circle-plus-outline"></i>
+      </el-button>
     </div>
+    <div v-if="article_list.length === 0" class="">
+      暂无数据！！！
+    </div>
+    <ul v-else>
+     <ul class="nav">
+       <li>标题</li>
+       <li>内容</li>
+       <li>描述</li>
+     </ul>
+      <li v-for="(item, index) in article_list" :key="index">
+        <div class="id">{{item.id}}</div>
+        <router-link :to="{ name: 'article', params: { id: item.id } }" class="title">
+          {{item.title}}
+        </router-link>
+        <div class="desc">{{item.description}}</div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-  import axios from 'axios'
-  export default {
-    name: 'Home',
-    data() {
-      return {
-        Data: []
-      }
+import {mapState, mapActions} from 'vuex'
+
+export default {
+  name: 'home',
+  data() {
+    return {
+    }
+  },
+  computed: {
+    ...mapState(['article_list']),
+  },
+  async created() {
+    try {
+      this.getArticles({
+        _limit: 20
+      })
+    } catch (e) {
+      this.$notify.error({
+        title: '错误',
+        message: '网络错误！！！'
+      });
+    }
+  },
+  methods: {
+    ...mapActions(['getArticles']),
+    onChange() {
+      this.$store.commit('increment')
     },
-    async created() {
-      try {
-        const res = await axios({
-          method: 'GET',
-          url: 'http://localhost:3000/todo'
-        })
-        this.Data = res.data
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    methods: {
-      del(id) {
-        if (window.confirm('确定要删除此项吗？')) {
-          axios({
-            url: `http://localhost:3000/todo/${id}`,
-            method: 'DELETE',
-          })
-        }
-      },
-      add(){
-        axios({
-          url: 'http://localhost:3000/todo',
-          method: 'POST',
-          data: {
-            title:this.$refs.getValue.value
-          }
-        })
-        // console.log(this.$refs.getValue.value)
-      }
+    linkTo() {
+      this.$router.push({
+        name: 'article-create'
+      })
     }
   }
+}
 </script>
-
 <style lang="scss" scoped>
-  .home-container {
-    width: 300px;
-    margin:20px auto;
-    border: 1px solid black;
-  }
-
-  .box .group {
-    border: 1px solid indianred;
-    height: 50px;
-    padding: 0 10px;
+.home-container {
+  .header {
+    height: 100px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
   }
 
-  .box .group i {
-    cursor: pointer;
-  }
+  li {
+    height: 50px;
+    line-height: 50px;
+    list-style: none;
+    display: flex;
+    justify-content:space-between;
+    padding: 0 20px;
+    &.id{
+      font-size: 16px;
+      line-height: 25px;
+    }
+    .title {
+      font-size: 16px;
+      line-height: 20px;
+      text-decoration: none;
+      color: #333;
 
-  .box .group i:hover {
-  transform:scale(1.2);
-  }
+      &:hover {
+        color: gray;
+        text-decoration: none;
+      }
+    }
 
-  .append{
-    margin-top: 10px;
+    .desc {
+      font-size: 16px;
+      line-height: 25px;
+    }
   }
-  .input{
-    width: 200px;
-    height: 30px;
-    margin-left: 20px;
-  }
-
-  .form {
-    margin: 20px auto;
-  }
-  .btn{
-    width: 50px;
-    height:40px;
-    margin-left: 30px;
-  }
+}
+.nav{
+  height: 40px;
+  border:1px solid gray;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
 
 </style>
+
